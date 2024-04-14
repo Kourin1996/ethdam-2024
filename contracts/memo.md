@@ -26,7 +26,7 @@ npx hardhat run scripts/03_deploy_erc20s.ts --network arbitrum_testnet
 
 ## Sapphire
 
-AtomicSwapManager: 0xcC97Df2A915a12Fb844fdCd0aA5BB463bF0085BB
+AtomicSwapManager: 0x664ec854f63361b1A36aC146f61a233133A08c88
 
 ## Optimism
 
