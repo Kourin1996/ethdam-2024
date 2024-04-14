@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "./lib/EllipticCurve.sol";
 
+// TODO: relase after sleep
 contract AtomicSwapManager {
     // secp256k1 parameters
     uint256 public constant GX =
@@ -26,6 +27,7 @@ contract AtomicSwapManager {
         //
         bool deposited;
         bool filled;
+        bool confirmed;
         uint256 sourcePrivateKeyIndex;
         uint256 targetPrivateKeyIndex;
     }
@@ -56,32 +58,43 @@ contract AtomicSwapManager {
         address sourceAccount,
         uint32 targetChainId,
         address targetTokenAddress,
-        uint256 targetTokenAmount,
-        uint256 privateKey
+        uint256 targetTokenAmount
     );
 
     event FillerPrivateKeyCreated(
         uint256 requestId,
         address sender,
-        address fillerAddress,
-        uint256 fillerPrivateKey
+        address fillerAddress
     );
 
     constructor(uint256 seed) {
         _privateKeySeed = seed;
     }
 
-    function revealPrivateKey(uint256 requestId) public view returns (uint256) {
+    function revealFiller(uint256 requestId) public view returns (address) {
+        Request memory request = _requests[requestId];
+
+        require(request.created, "Request doesn't exist");
+
+        return _fillers[requestId];
+    }
+
+    function revealPrivateKey(
+        uint256 requestId,
+        // XXX: workaround, ideally should give signature
+        address sender
+    ) public view returns (uint256) {
         Request memory request = _requests[requestId];
 
         require(request.created, "Request doesn't exist");
         require(request.deposited, "Request is not deposited yet");
         require(request.filled, "Request is not filled yet");
+        require(request.confirmed, "Request is not confirmed yet");
 
-        if (_requesters[requestId] == msg.sender) {
+        if (_requesters[requestId] == sender) {
             return _privateKeys[request.targetPrivateKeyIndex];
         }
-        if (_fillers[requestId] == msg.sender) {
+        if (_fillers[requestId] == sender) {
             return _privateKeys[request.sourcePrivateKeyIndex];
         }
 
@@ -134,6 +147,7 @@ contract AtomicSwapManager {
             //
             deposited: false,
             filled: false,
+            confirmed: false,
             sourcePrivateKeyIndex: sourcePrivateKeyIndex,
             targetPrivateKeyIndex: 0
         });
@@ -147,8 +161,7 @@ contract AtomicSwapManager {
             sourceAccountAddress,
             targetChainId,
             targetTokenAddress,
-            targetTokenAmount,
-            sourcePrivateKey // TODO: remove
+            targetTokenAmount
         );
     }
 
@@ -171,12 +184,7 @@ contract AtomicSwapManager {
             msg.sender
         ] = privateKeyIndex;
 
-        emit FillerPrivateKeyCreated(
-            requestId,
-            msg.sender,
-            fillerAddress,
-            privateKey
-        );
+        emit FillerPrivateKeyCreated(requestId, msg.sender, fillerAddress);
 
         return fillerAddress;
     }
@@ -244,6 +252,22 @@ contract AtomicSwapManager {
         _fillers[requestId] = _privateKeyIndexToCreatorAddress[
             request.targetPrivateKeyIndex
         ];
+
+        return true;
+    }
+
+    function confirm(uint256 requestId) external returns (bool) {
+        Request storage request = _requests[requestId];
+
+        require(request.created, "Request doesn't exist");
+        require(request.deposited, "Not deposited yet");
+        require(request.filled, "Not filled yet");
+        require(
+            _requesters[requestId] == msg.sender,
+            "Only requester can confirm"
+        );
+
+        request.confirmed = true;
 
         return true;
     }

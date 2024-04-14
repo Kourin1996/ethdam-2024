@@ -5,8 +5,11 @@ import "@oasisprotocol/sapphire-hardhat";
 require("dotenv").config();
 
 const config: HardhatUserConfig = {
+  paths: {
+    sources: "./src",
+  },
   solidity: {
-    version: "0.8.19",
+    version: "0.8.20",
     settings: {
       optimizer: {
         enabled: true,
@@ -18,6 +21,20 @@ const config: HardhatUserConfig = {
     sapphire_testnet: {
       chainId: 0x5aff,
       url: "https://testnet.sapphire.oasis.io",
+      accounts: process.env.PRIVATE_KEYS
+        ? process.env.PRIVATE_KEYS.split(",")
+        : [],
+    },
+    optimism_testnet: {
+      chainId: 0xaa37dc,
+      url: process.env.OPTIMISM_SEPOLIA_RPC!,
+      accounts: process.env.PRIVATE_KEYS
+        ? process.env.PRIVATE_KEYS.split(",")
+        : [],
+    },
+    arbitrum_testnet: {
+      chainId: 0x66eee,
+      url: process.env.ARBITRUM_SEPOLIA_RPC!,
       accounts: process.env.PRIVATE_KEYS
         ? process.env.PRIVATE_KEYS.split(",")
         : [],

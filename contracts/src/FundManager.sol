@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import {Host} from "@oasisprotocol/sapphire-contracts/contracts/OPL.sol";
+// import {Host} from "@oasisprotocol/sapphire-contracts/contracts/OPL.sol";
 
 interface IERC20 {
     function transferFrom(
@@ -11,10 +11,10 @@ interface IERC20 {
     ) external returns (bool);
 }
 
-contract FundManager is Host {
-    constructor(
-        address sapphireEventRouterAddress
-    ) Host(sapphireEventRouterAddress) {}
+contract FundManager {
+    // constructor(
+    //     address sapphireEventRouterAddress
+    // ) Host(sapphireEventRouterAddress) {}
 
     function deposit(
         uint256 requestId,
@@ -41,10 +41,10 @@ contract FundManager is Host {
             payable(targetAccount).transfer(msg.value);
         }
 
-        postMessage(
-            "deposit",
-            abi.encode(requestId, targetAccount, tokenAddress, tokenAmount)
-        );
+        // postMessage(
+        //     "deposit",
+        //     abi.encode(requestId, targetAccount, tokenAddress, tokenAmount)
+        // );
     }
 
     function fill(
@@ -72,9 +72,9 @@ contract FundManager is Host {
             payable(targetAccount).transfer(msg.value);
         }
 
-        postMessage(
-            "fill",
-            abi.encode(requestId, targetAccount, tokenAddress, tokenAmount)
-        );
+        // postMessage(
+        //     "fill",
+        //     abi.encode(requestId, targetAccount, tokenAddress, tokenAmount)
+        // );
     }
 }

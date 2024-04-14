@@ -1,12 +1,11 @@
 import { ethers } from "hardhat";
-import crypto from "crypto";
 
 async function main() {
   const AtomicSwapManager = await ethers.getContractFactory(
     "AtomicSwapManager"
   );
   const atomicSwapManager = await AtomicSwapManager.deploy(
-    "0x" + crypto.randomBytes(32).toString("hex")
+    ethers.keccak256(ethers.toBeHex(new Date().getTime()))
   );
   console.log(
     "AtomicSwapManager deployed to:",
