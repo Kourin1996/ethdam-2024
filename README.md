@@ -1,6 +1,6 @@
 # MoleSwap: A Novel Cross-Chain Swap Protocol Inspired by Intent Architecture
 
-\*\*This product is developed during [ETHDam2024](https://taikai.network/en/cryptocanal/hackathons/ethdam2024/overview)
+**This product is developed during [ETHDam2024](https://taikai.network/en/cryptocanal/hackathons/ethdam2024/overview)**
 
 A cross chain swap protocol using account secret keys swap and secure key management by Oasis Sapphire, all without relying on central servers such as relayers.
 
